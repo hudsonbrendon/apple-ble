@@ -11,6 +11,7 @@ def test_proximity_pairing_type_is_0x07():
 
 def test_model_map_covers_known_airpods():
     assert const.MODEL_BY_CHAR["e"] == "AirPods Pro"
+    assert const.MODEL_BY_CHAR["4"] == "AirPods Pro 2"
     assert const.MODEL_BY_CHAR["a"] == "AirPods Max"
     assert const.MODEL_BY_CHAR["2"] == "AirPods (1st gen)"
 

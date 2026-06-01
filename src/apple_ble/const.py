@@ -21,11 +21,13 @@ IDX_CASE: int = 15
 # Battery nibble value 0x0F means "not present / unknown".
 NIBBLE_UNKNOWN: int = 0x0F
 
-# Model is identified by the single hex char at IDX_MODEL.
+# Model is identified by the single hex char at IDX_MODEL — the low nibble of
+# the device-model byte (e.g. 0x0E -> "e" = AirPods Pro, 0x14 -> "4" = Pro 2).
 MODEL_BY_CHAR: dict[str, str] = {
     "2": "AirPods (1st gen)",
     "f": "AirPods (2nd gen)",
     "3": "AirPods (3rd gen)",
     "e": "AirPods Pro",
+    "4": "AirPods Pro 2",
     "a": "AirPods Max",
 }

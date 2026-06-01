@@ -155,3 +155,19 @@ def test_flipped_swaps_indices_and_charging_bits():
     # Bit swap: charge bit 0b0001 -> right_charging (not left) when flipped
     assert data.left_charging is False
     assert data.right_charging is True
+
+
+def test_real_hardware_airpods_pro_2():
+    # Captured live from real AirPods Pro 2 (device-model bytes 0x14 0x20) over
+    # the Mac's built-in Bluetooth. Pods were out of the case and flipped.
+    # This is a real-world regression fixture, not a synthetic one.
+    raw = bytes.fromhex("07190114200b538f10000848273aff815e50000000261e7bfab684")
+    data = parse_proximity_pairing(raw)
+    assert data is not None
+    assert data.model == "AirPods Pro 2"  # nibble@7='4'
+    assert data.left_battery == 50        # flip@10='0' -> flipped; left=idx12='5'
+    assert data.right_battery == 30       # right=idx13='3'
+    assert data.case_battery is None      # case@15='f' -> not present
+    assert data.left_charging is False
+    assert data.right_charging is False
+    assert data.case_charging is False
