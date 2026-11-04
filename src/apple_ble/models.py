@@ -27,7 +27,6 @@ class AirPodsData:
     right_in_ear: bool | None = None
     pods_in_case: int | None = None
     lid_open: bool | None = None
-    lid_open_count: int | None = None
     color: int | None = None
 
 

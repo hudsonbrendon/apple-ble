@@ -62,7 +62,7 @@ class DecryptedStatus:
 
 
 def _pct(b: int) -> tuple[int | None, bool]:
-    # ponytail: bit7 = charging, low 7 bits = percent; 0x7F/0xFF = absent.
+    # bit7 = charging, low 7 bits = percent; 0x7F/0xFF = absent (hardware-verified).
     value = b & 0x7F
     return (value if value <= 100 else None), bool(b & 0x80) and value <= 100
 

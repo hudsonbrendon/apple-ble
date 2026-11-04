@@ -75,3 +75,32 @@ def test_clear_part_real_capture():
     assert d.pods_in_case == 0
     assert (d.left_battery, d.right_battery, d.case_battery) == (80, 80, None)
     assert d.color == 0
+
+
+def _status(clear_hex: str):
+    return parse_proximity_pairing(bytes.fromhex("0719011420" + clear_hex + "04") + bytes(16))
+
+
+def test_hardware_states():
+    # (status..color, left_in_ear, right_in_ear, pods_in_case, lid_open) captured 04/11
+    cases = [
+        ("0b878f1100", True, True, 0, None),     # both in ears (right advertising)
+        ("03878f1100", False, True, 0, None),    # left in hand
+        ("73789f5100", False, True, 1, True),    # left in open case (left adv.)
+        ("1387a71100", False, True, 1, True),    # same, right advertising
+        ("7378975900", False, True, 1, False),   # lid closed
+        ("02f78f1100", False, True, 0, None),    # right only sees itself
+        ("1587b75200", False, False, 2, True),   # both in open case
+    ]
+    for clear, le, re_, n, lid in cases:
+        d = _status(clear)
+        assert (d.left_in_ear, d.right_in_ear, d.pods_in_case, d.lid_open) == (le, re_, n, lid), clear
+
+
+def test_hardware_charging():
+    d = _status("7588f75200")  # both buds + case charging, left advertising
+    assert (d.left_charging, d.right_charging, d.case_charging) == (True, True, True)
+    assert (d.left_battery, d.right_battery, d.case_battery) == (80, 80, 70)
+    d = _status("1387a71100")  # right advertising (flipped), left charging in case
+    assert (d.left_charging, d.right_charging, d.case_charging) == (True, False, False)
+    assert (d.left_battery, d.right_battery) == (80, 70)

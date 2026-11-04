@@ -81,7 +81,9 @@ def parse_proximity_pairing(data: bytes) -> AirPodsData | None:
         left_in_ear=left_in_ear,
         right_in_ear=right_in_ear,
         pods_in_case=pods_in_case,
-        lid_open=not lid & 0x08,
-        lid_open_count=lid & 0x07,
+        # Byte 8 bit 3 = lid closed. Verified on hardware; only meaningful
+        # while the advertiser sees a pod in the case (in-ear pods keep a stale
+        # byte, and a pod in a closed case goes silent).
+        lid_open=None if pods_in_case == 0 else not lid & 0x08,
         color=data[_COLOR],
     )
