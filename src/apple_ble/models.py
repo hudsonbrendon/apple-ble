@@ -20,6 +20,14 @@ class AirPodsData:
     left_charging: bool
     right_charging: bool
     case_charging: bool
+    # Clear-part extras (defaults keep 0.1.x constructors working).
+    model_id: int = 0
+    flipped: bool = False
+    left_in_ear: bool | None = None
+    right_in_ear: bool | None = None
+    pods_in_case: int | None = None
+    lid_open: bool | None = None
+    color: int | None = None
 
 
 @dataclass(frozen=True, slots=True)
