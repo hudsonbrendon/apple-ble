@@ -5,6 +5,12 @@ from __future__ import annotations
 from . import const
 from .models import AirPodsData
 
+# Bytes of manufacturer_data[76] that are AES-128 encrypted with the EncKey.
+ENCRYPTED_SLICE = slice(11, 27)
+
+# Byte offsets (manufacturer_data[76], type byte = 0).
+_STATUS, _LID, _COLOR = 5, 8, 9
+
 
 def decode_battery_nibble(nibble: int) -> int | None:
     """Convert a 0x0-0xF battery nibble to a percentage in 10% steps.
@@ -53,6 +59,15 @@ def parse_proximity_pairing(data: bytes) -> AirPodsData | None:
     right_charging = bool(charge & right_bit)
     case_charging = bool(charge & 0b0100)
 
+    status = data[_STATUS]
+    # Bit 6: the advertising pod is in the case; together with the flip bit it
+    # decides which of bits 1/3 is the left pod.
+    swap = flipped != bool(status & 0x40)
+    left_in_ear = bool(status & (0x08 if swap else 0x02))
+    right_in_ear = bool(status & (0x02 if swap else 0x08))
+    pods_in_case = 2 if status & 0x04 else 1 if status & 0x10 else 0
+    lid = data[_LID]
+
     return AirPodsData(
         model=model,
         left_battery=left_battery,
@@ -61,4 +76,12 @@ def parse_proximity_pairing(data: bytes) -> AirPodsData | None:
         left_charging=left_charging,
         right_charging=right_charging,
         case_charging=case_charging,
+        model_id=data[3] | data[4] << 8,
+        flipped=flipped,
+        left_in_ear=left_in_ear,
+        right_in_ear=right_in_ear,
+        pods_in_case=pods_in_case,
+        lid_open=not lid & 0x08,
+        lid_open_count=lid & 0x07,
+        color=data[_COLOR],
     )

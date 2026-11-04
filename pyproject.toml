@@ -4,14 +4,14 @@ build-backend = "hatchling.build"
 
 [project]
 name = "apple-ble"
-version = "0.1.1"
+version = "0.2.0"
 description = "Pure-Python parser for Apple Continuity BLE proximity-pairing adverts (AirPods battery + Apple device presence)"
 readme = "README.md"
 requires-python = ">=3.12"
 license = { text = "MIT" }
 authors = [{ name = "Hudson Brendon", email = "contato.hudsonbrendon@gmail.com" }]
 keywords = ["airpods", "ble", "bluetooth", "apple", "continuity", "home-assistant"]
-dependencies = []
+dependencies = ["cryptography>=42"]
 
 [project.optional-dependencies]
 cli = ["bleak>=0.22"]
